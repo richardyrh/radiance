@@ -147,9 +147,13 @@ class WithNMedCores(
   }
 })
 
-class WithNCustomSmallCores(n: Int, overrideIdOffset: Option[Int] = None) extends Config((site, here, up) => {
-  case RocketTilesKey => {
-    val prev = up(RocketTilesKey, site)
+class WithNCustomSmallCores(
+  n: Int,
+  overrideIdOffset: Option[Int] = None,
+  crossing: RocketCrossingParams = RocketCrossingParams()
+) extends Config((site, here, up) => {
+  case TilesLocated(InSubsystem) => {
+    val prev = up(TilesLocated(InSubsystem), site)
     val idOffset = overrideIdOffset.getOrElse(prev.size)
     val med = RocketTileParams(
       core = RocketCoreParams(fpu = None),
@@ -173,7 +177,10 @@ class WithNCustomSmallCores(n: Int, overrideIdOffset: Option[Int] = None) extend
         nTLBBasePageSectors = 1,
         nTLBSuperpages = 1,
         blockBytes = site(CacheBlockBytes))))
-    List.tabulate(n)(i => med.copy(hartId = i + idOffset)) ++ prev
+    List.tabulate(n)(i => RocketTileAttachParams(
+      med.copy(hartId = i + idOffset),
+      crossing
+    )) ++ prev
   }
 })
 
