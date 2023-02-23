@@ -95,6 +95,16 @@ class WithTLXbarUnitTests extends Config((site, here, up) => {
       Module(new TLMasterMuxTest(           txns=5*txns, timeout=timeout)) ) }
 })
 
+class WithCoalescingUnitTests extends Config((site, here, up) => {
+  case UnitTests => (q: Parameters) => {
+    implicit val p = q
+    val txns = 100 * site(TestDurationMultiplier)
+    val timeout = 50000 * site(TestDurationMultiplier)
+    Seq(
+      Module(new CoalescingUnitTest(1, txns=5*txns, timeout=timeout)) )
+  }
+})
+
 class WithECCTests extends Config((site, here, up) => {
   case UnitTests => (q: Parameters) => {
     Seq(
@@ -173,6 +183,7 @@ class AMBAUnitTestConfig extends Config(new WithAMBAUnitTests ++ new WithTestDur
 class TLSimpleUnitTestConfig extends Config(new WithTLSimpleUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class TLWidthUnitTestConfig extends Config(new WithTLWidthUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class TLXbarUnitTestConfig extends Config(new WithTLXbarUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
+class CoalescingUnitTestConfig extends Config(new WithCoalescingUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class ECCUnitTestConfig extends Config(new WithECCTests)
 class ScatterGatherTestConfig extends Config(new WithScatterGatherTests)
 class PLRUUnitTestConfig extends Config(new WithPLRUTests)
