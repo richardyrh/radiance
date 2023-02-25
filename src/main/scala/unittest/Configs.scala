@@ -101,7 +101,7 @@ class WithCoalescingUnitTests extends Config((site, here, up) => {
     val txns = 100 * site(TestDurationMultiplier)
     val timeout = 50000 * site(TestDurationMultiplier)
     Seq(
-      Module(new CoalescingUnitTest(1, txns=5*txns, timeout=timeout)) )
+      Module(new CoalescingUnitTest(txns=5*txns, timeout=timeout)) )
   }
 })
 
