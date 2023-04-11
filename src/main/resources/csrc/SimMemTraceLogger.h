@@ -29,4 +29,8 @@ public:
 };
 
 extern "C" void memtracelogger_init(const char *filename);
-extern "C" void memtracelogger_log(unsigned char *trace_log_ready);
+extern "C" void memtracelogger_log(unsigned char trace_log_valid,
+                                   unsigned long trace_log_cycle,
+                                   unsigned long trace_log_address,
+                                   unsigned int trace_log_lane_id,
+                                   unsigned char *trace_log_ready);
