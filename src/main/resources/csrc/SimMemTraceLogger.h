@@ -1,5 +1,4 @@
 #include <vector>
-#include <memory>
 #include <fstream>
 
 class MemTraceLogger;
@@ -12,7 +11,7 @@ struct MemTraceLine {
   int lane_id = 0;
   unsigned long address = 0;
   unsigned long data = 0;
-  int data_size = 0;
+  int log_data_size = 0;
 };
 
 class MemTraceLogger {
