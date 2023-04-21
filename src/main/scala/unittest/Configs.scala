@@ -101,7 +101,8 @@ class WithCoalescingUnitTests extends Config((site, _, _) => {
     val timeout = 50000 * site(TestDurationMultiplier)
     Seq(
       // Module(new TLRAMCoalescerTest(timeout=timeout)),
-      Module(new TLRAMCoalescerLoggerTest(timeout=timeout)) ) }
+      Module(new TLRAMCoalescerLoggerTest(timeout=timeout)),
+    ) }
 })
 
 class WithECCTests extends Config((site, here, up) => {
