@@ -95,14 +95,14 @@ class WithTLXbarUnitTests extends Config((site, here, up) => {
       Module(new TLMasterMuxTest(           txns=5*txns, timeout=timeout)) ) }
 })
 
-class WithCoalescingUnitTests extends Config((site, here, up) => {
+class WithCoalescingUnitTests extends Config((site, _, _) => {
   case UnitTests => (q: Parameters) => {
     implicit val p = q
-    val txns = 100 * site(TestDurationMultiplier)
     val timeout = 50000 * site(TestDurationMultiplier)
     Seq(
-      Module(new CoalescingUnitTest(timeout=timeout)) )
-  }
+      // Module(new TLRAMCoalescerTest(timeout=timeout)),
+      Module(new TLRAMCoalescerLoggerTest(timeout=timeout)),
+    ) }
 })
 
 class WithECCTests extends Config((site, here, up) => {
