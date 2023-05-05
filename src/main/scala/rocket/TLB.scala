@@ -6,7 +6,7 @@ package freechips.rocketchip.rocket
 import chisel3._
 import chisel3.util._
 
-import freechips.rocketchip.config.{Field, Parameters}
+import org.chipsalliance.cde.config.{Field, Parameters}
 import freechips.rocketchip.subsystem.CacheBlockBytes
 import freechips.rocketchip.diplomacy.RegionType
 import freechips.rocketchip.tile.{CoreModule, CoreBundle}
@@ -59,11 +59,10 @@ class TLBReq(lgMaxSize: Int)(implicit p: Parameters) extends CoreBundle()(p) {
 
 }
 
-class TLBExceptions(implicit p: Parameters) extends CoreBundle()(p) {
+class TLBExceptions extends Bundle {
   val ld = Bool()
   val st = Bool()
   val inst = Bool()
-  val v = Bool()
 }
 
 class TLBResp(implicit p: Parameters) extends CoreBundle()(p) {
@@ -220,13 +219,12 @@ class TLBEntry(val nSectors: Int, val superpage: Boolean, val superpageOnly: Boo
         for (((v, e), i) <- (valid zip entry_data).zipWithIndex)
           when (tag_v === virtual && i.U === sectorIdx(vpn)) { v := false.B }
       }
-
-      // For fragmented superpage mappings, we assume the worst (largest)
-      // case, and zap entries whose most-significant VPNs match
-      when (((tag_vpn ^ vpn) >> (pgLevelBits * (pgLevels - 1))) === 0.U) {
-        for ((v, e) <- valid zip entry_data)
-          when (tag_v === virtual && e.fragmented_superpage) { v := false.B }
-      }
+    }
+    // For fragmented superpage mappings, we assume the worst (largest)
+    // case, and zap entries whose most-significant VPNs match
+    when (((tag_vpn ^ vpn) >> (pgLevelBits * (pgLevels - 1))) === 0.U) {
+      for ((v, e) <- valid zip entry_data)
+        when (tag_v === virtual && e.fragmented_superpage) { v := false.B }
     }
   }
   def invalidateNonGlobal(virtual: Bool): Unit = {
@@ -307,7 +305,7 @@ case class TLBConfig(
   * @param edge collect SoC metadata.
   */
 class TLB(instruction: Boolean, lgMaxSize: Int, cfg: TLBConfig)(implicit edge: TLEdgeOut, p: Parameters) extends CoreModule()(p) {
-  val io = new Bundle {
+  val io = IO(new Bundle {
     /** request from Core */
     val req = Flipped(Decoupled(new TLBReq(lgMaxSize)))
     /** response to Core */
@@ -318,7 +316,7 @@ class TLB(instruction: Boolean, lgMaxSize: Int, cfg: TLBConfig)(implicit edge: T
     val ptw = new TLBPTWIO
     /** suppress a TLB refill, one cycle after a miss */
     val kill = Input(Bool())
-  }
+  })
 
   val pageGranularityPMPs = pmpGranularity >= (1 << pgIdxBits)
   val vpn = io.req.bits.vaddr(vaddrBits-1, pgIdxBits)

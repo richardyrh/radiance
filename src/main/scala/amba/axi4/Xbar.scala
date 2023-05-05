@@ -4,11 +4,12 @@ package freechips.rocketchip.amba.axi4
 
 import chisel3._
 import chisel3.util._
-import freechips.rocketchip.config._
+import org.chipsalliance.cde.config._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.util._
 import freechips.rocketchip.unittest._
 import freechips.rocketchip.tilelink._
+import freechips.rocketchip.util.EnhancedChisel3Assign
 
 /**
   * AXI4 Crossbar. It connects multiple AXI4 masters to slaves.
