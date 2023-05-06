@@ -3,12 +3,13 @@
 package freechips.rocketchip.tilelink
 
 import chisel3._
-import freechips.rocketchip.config.Parameters
+import org.chipsalliance.cde.config.Parameters
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.util._
 import freechips.rocketchip.amba.axi4._
 import freechips.rocketchip.amba._
 import chisel3.util.{log2Ceil, UIntToOH, Queue, Decoupled, Cat}
+import freechips.rocketchip.util.EnhancedChisel3Assign
 
 class AXI4TLStateBundle(val sourceBits: Int) extends Bundle {
   val size   = UInt(4.W)

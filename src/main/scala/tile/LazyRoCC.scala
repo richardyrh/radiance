@@ -7,7 +7,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.util.HasBlackBoxResource
 import chisel3.experimental.IntParam
-import freechips.rocketchip.config._
+import org.chipsalliance.cde.config._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket._
 import freechips.rocketchip.tilelink._
@@ -243,7 +243,7 @@ class  CharacterCountExample(opcodes: OpcodeSet)(implicit p: Parameters) extends
 class CharacterCountExampleModuleImp(outer: CharacterCountExample)(implicit p: Parameters) extends LazyRoCCModuleImp(outer)
   with HasCoreParameters
   with HasL1CacheParameters {
-  val cacheParams = tileParams.icache.get
+  val cacheParams = tileParams.dcache.get
 
   private val blockOffset = blockOffBits
   private val beatOffset = log2Up(cacheDataBits/8)
@@ -314,6 +314,7 @@ class CharacterCountExampleModuleImp(outer: CharacterCountExample)(implicit p: P
     when (recv_beat === cacheDataBeats.U) {
       addr := next_addr
       state := Mux(zero_found || finished, s_resp, s_acq)
+      recv_beat := 0.U
     } .otherwise {
       state := s_gnt
     }

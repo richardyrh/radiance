@@ -4,7 +4,7 @@ package freechips.rocketchip.tile
 
 import Chisel._
 
-import freechips.rocketchip.config._
+import org.chipsalliance.cde.config._
 import freechips.rocketchip.subsystem._
 import freechips.rocketchip.diplomacy._
 
@@ -190,7 +190,7 @@ trait HasTileParameters extends HasNonDiplomaticTileParameters {
     }
   def vpnBits: Int = vaddrBits - pgIdxBits
   def ppnBits: Int = paddrBits - pgIdxBits
-  def vpnBitsExtended: Int = vpnBits + (vaddrBits < xLen).toInt
+  def vpnBitsExtended: Int = vpnBits + (if (vaddrBits < xLen) 1 + usingHypervisor.toInt else 0)
   def vaddrBitsExtended: Int = vpnBitsExtended + pgIdxBits
 }
 
