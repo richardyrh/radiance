@@ -3,12 +3,13 @@
 package freechips.rocketchip.tilelink
 
 import chisel3._
-import freechips.rocketchip.config.Parameters
+import org.chipsalliance.cde.config.Parameters
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.amba.apb._
 import freechips.rocketchip.amba._
 import APBParameters._
 import chisel3.util._
+import freechips.rocketchip.util.EnhancedChisel3Assign
 
 case class TLToAPBNode()(implicit valName: ValName) extends MixedAdapterNode(TLImp, APBImp)(
   dFn = { cp =>
