@@ -101,7 +101,8 @@ class WithCoalescingUnitTests extends Config((site, _, _) => {
     val timeout = 50000 * site(TestDurationMultiplier)
     Seq(
       // Module(new TLRAMCoalescerTest(timeout=timeout)),
-      Module(new TLRAMCoalescerLoggerTest(timeout=timeout)),
+      Module(new TLRAMCoalescerLoggerTest(filename="vecadd.core1.thread4.trace", timeout=timeout)),
+      // Module(new TLRAMCoalescerLoggerTest(filename="nvbit.vecadd.n100000.filter_sm0.trace", timeout=timeout)),
       // Module(new DummyCoalescerTest(timeout=timeout)),
     ) }
 })
