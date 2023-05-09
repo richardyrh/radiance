@@ -11,6 +11,7 @@ import freechips.rocketchip.subsystem.{BaseSubsystemConfig}
 import freechips.rocketchip.devices.tilelink._
 import freechips.rocketchip.tilelink._
 import freechips.rocketchip.util._
+import freechips.rocketchip.subsystem.WithNLanes
 
 case object TestDurationMultiplier extends Field[Int]
 
@@ -102,7 +103,8 @@ class WithCoalescingUnitTests extends Config((site, _, _) => {
     Seq(
       // Module(new TLRAMCoalescerTest(timeout=timeout)),
       Module(new TLRAMCoalescerLoggerTest(filename="vecadd.core1.thread4.trace", timeout=timeout)),
-      // Module(new TLRAMCoalescerLoggerTest(filename="nvbit.vecadd.n100000.filter_sm0.trace", timeout=timeout)),
+      // Module(new TLRAMCoalescerLoggerTest(filename="sfilter.core1.thread4.trace", timeout=timeout)),
+      // Module(new TLRAMCoalescerLoggerTest(filename="nvbit.vecadd.n100000.filter_sm0.trace", timeout=timeout)(new WithNLanes(32))),
       // Module(new DummyCoalescerTest(timeout=timeout)),
     ) }
 })
@@ -185,7 +187,7 @@ class AMBAUnitTestConfig extends Config(new WithAMBAUnitTests ++ new WithTestDur
 class TLSimpleUnitTestConfig extends Config(new WithTLSimpleUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class TLWidthUnitTestConfig extends Config(new WithTLWidthUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class TLXbarUnitTestConfig extends Config(new WithTLXbarUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
-class CoalescingUnitTestConfig extends Config(new WithCoalescingUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
+class CoalescingUnitTestConfig extends Config(new WithCoalescingUnitTests ++ new WithTestDuration(10) ++ new WithNLanes(4) ++ new BaseSubsystemConfig)
 class ECCUnitTestConfig extends Config(new WithECCTests)
 class ScatterGatherTestConfig extends Config(new WithScatterGatherTests)
 class PLRUUnitTestConfig extends Config(new WithPLRUTests)

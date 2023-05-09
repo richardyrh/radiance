@@ -7,6 +7,7 @@ import chisel3.util._
 import org.chipsalliance.cde.config._
 import freechips.rocketchip.devices.debug._
 import freechips.rocketchip.devices.tilelink._
+import freechips.rocketchip.tilelink._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket._
 import freechips.rocketchip.tile._
@@ -249,6 +250,12 @@ class With1TinyCore extends Config((site, here, up) => {
         crossingType = SynchronousCrossing(),
         master = TileMasterPortParams())
     ))
+  }
+})
+
+class WithNLanes(n: Int) extends Config((site, here, up) => {
+  case SIMTCoreKey => {
+    Some(up(SIMTCoreKey, site).getOrElse(SIMTCoreParams()).copy(nLanes = n))
   }
 })
 
