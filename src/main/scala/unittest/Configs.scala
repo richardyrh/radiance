@@ -196,11 +196,13 @@ class TLSimpleUnitTestConfig extends Config(new WithTLSimpleUnitTests ++ new Wit
 class TLWidthUnitTestConfig extends Config(new WithTLWidthUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class TLXbarUnitTestConfig extends Config(new WithTLXbarUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class CoalescingUnitTestConfig extends Config(new WithCoalescingUnitTests ++ new WithTestDuration(10) ++ new WithNLanes(4) ++ new BaseSubsystemConfig)
-class CoalescingSynthesisDummyLane4Config extends Config(new WithCoalescingUnitSynthesisDummy(4) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
-class CoalescingSynthesisDummyLane8Config extends Config(new WithCoalescingUnitSynthesisDummy(8) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
-class CoalescingSynthesisDummyLane16Config extends Config(new WithCoalescingUnitSynthesisDummy(16) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
-class CoalescingSynthesisDummyLane32Config extends Config(new WithCoalescingUnitSynthesisDummy(32) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class ECCUnitTestConfig extends Config(new WithECCTests)
 class ScatterGatherTestConfig extends Config(new WithScatterGatherTests)
 class PLRUUnitTestConfig extends Config(new WithPLRUTests)
 class PowerQueueTestConfig extends Config(new WithPowerQueueTests)
+
+// Dummy configs of various sizes for synthesis
+class CoalescingSynthesisDummyLane4Config extends Config(new WithCoalescingUnitSynthesisDummy(4) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
+class CoalescingSynthesisDummyLane8Config extends Config(new WithCoalescingUnitSynthesisDummy(8) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
+class CoalescingSynthesisDummyLane16Config extends Config(new WithCoalescingUnitSynthesisDummy(16) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
+class CoalescingSynthesisDummyLane32Config extends Config(new WithCoalescingUnitSynthesisDummy(32) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
