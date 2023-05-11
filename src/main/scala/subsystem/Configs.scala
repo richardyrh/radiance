@@ -253,10 +253,20 @@ class With1TinyCore extends Config((site, here, up) => {
   }
 })
 
-class WithNLanes(n: Int) extends Config((site, here, up) => {
+class WithNLanes(n: Int) extends Config((site, _, up) => {
   case SIMTCoreKey => {
     Some(up(SIMTCoreKey, site).getOrElse(SIMTCoreParams()).copy(nLanes = n))
   }
+})
+
+class WithMemtraceCore(tracefilename: String, traceHasSource: Boolean = false)
+extends Config((site, _, _) => {
+  case MemtraceCoreKey =>
+    require(
+      site(SIMTCoreKey).isDefined,
+      "Memtrace core requires a SIMT configuration. Use WithNLanes to enable SIMT."
+    )
+  Some(MemtraceCoreParams(tracefilename, traceHasSource))
 })
 
 class WithNBanks(n: Int) extends Config((site, here, up) => {
