@@ -261,12 +261,23 @@ class WithNLanes(n: Int) extends Config((site, _, up) => {
 
 class WithMemtraceCore(tracefilename: String, traceHasSource: Boolean = false)
 extends Config((site, _, _) => {
-  case MemtraceCoreKey =>
+  case MemtraceCoreKey => {
     require(
       site(SIMTCoreKey).isDefined,
       "Memtrace core requires a SIMT configuration. Use WithNLanes to enable SIMT."
     )
-  Some(MemtraceCoreParams(tracefilename, traceHasSource))
+    Some(MemtraceCoreParams(tracefilename, traceHasSource))
+  }
+})
+
+class WithCoalescer extends Config((site, _, up) => {
+  case CoalescerKey => {
+    val nLanes = up(SIMTCoreKey, site) match {
+      case Some(param) => param.nLanes
+      case None => 1
+    }
+    Some(defaultConfig.copy(numLanes = nLanes))
+  }
 })
 
 class WithNBanks(n: Int) extends Config((site, here, up) => {
