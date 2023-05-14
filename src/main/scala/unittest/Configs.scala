@@ -104,6 +104,8 @@ class WithCoalescingUnitTests extends Config((site, _, _) => {
       // Module(new TLRAMCoalescerTest(timeout=timeout)),
       Module(new TLRAMCoalescerLoggerTest(filename="vecadd.core1.thread4.trace", timeout=timeout)),
       // Module(new TLRAMCoalescerLoggerTest(filename="sfilter.core1.thread4.trace", timeout=timeout)),
+      // Module(new TLRAMCoalescerLoggerTest(filename="nearn.core1.thread4.trace", timeout=50000000 * site(TestDurationMultiplier))),
+      // Module(new TLRAMCoalescerLoggerTest(filename="psort.core1.thread4.trace", timeout=timeout)),
       // Module(new TLRAMCoalescerLoggerTest(filename="nvbit.vecadd.n100000.filter_sm0.trace", timeout=timeout)(new WithNLanes(32))),
     ) }
 })
