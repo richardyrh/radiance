@@ -276,7 +276,8 @@ class WithCoalescer extends Config((site, _, up) => {
       case Some(param) => param.nLanes
       case None => 1
     }
-    Some(defaultConfig.copy(numLanes = nLanes))
+    // FIXME addressWidth is a hack; would it be better to set it at runtime?
+    Some(defaultConfig.copy(numLanes = nLanes, addressWidth = 32))
   }
 })
 
