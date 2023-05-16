@@ -276,8 +276,18 @@ class WithCoalescer extends Config((site, _, up) => {
       case Some(param) => param.nLanes
       case None => 1
     }
-    // FIXME addressWidth is a hack; would it be better to set it at runtime?
-    Some(defaultConfig.copy(numLanes = nLanes, addressWidth = 32))
+  // FIXME addressWidth is a hack; would it be better to set it at runtime?
+  
+    // Configure databus width and maximum coalescing size
+    val subWidthInBytes = site(SystemBusKey).beatBits/8
+
+    Some(defaultConfig.copy(
+      numLanes = nLanes, 
+      addressWidth = 32, //I couldn't find where this 32 is coming from
+      dataBusWidth = log2Ceil(subWidthInBytes), 
+      coalLogSizes = Seq(log2Ceil(subWidthInBytes)) 
+      )
+    )
   }
 })
 
