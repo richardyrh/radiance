@@ -270,6 +270,12 @@ extends Config((site, _, _) => {
   }
 })
 
+class WithPriorityCoalXbar extends Config((site, _, up) => {
+  case CoalXbarKey => {
+    Some(up(CoalXbarKey, site).getOrElse(CoalXbarParam))
+    }
+})
+
 class WithCoalescer extends Config((site, _, up) => {
   case CoalescerKey => {
     val nLanes = up(SIMTCoreKey, site) match {
