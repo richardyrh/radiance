@@ -11,7 +11,7 @@ import freechips.rocketchip.subsystem.{BaseSubsystemConfig}
 import freechips.rocketchip.devices.tilelink._
 import freechips.rocketchip.tilelink._
 import freechips.rocketchip.util._
-import freechips.rocketchip.subsystem.WithNLanes
+import freechips.rocketchip.subsystem.WithSimtLanes
 
 case object TestDurationMultiplier extends Field[Int]
 
@@ -106,7 +106,7 @@ class WithCoalescingUnitTests extends Config((site, _, _) => {
       // Module(new TLRAMCoalescerLoggerTest(filename="sfilter.core1.thread4.trace", timeout=timeout)),
       // Module(new TLRAMCoalescerLoggerTest(filename="nearn.core1.thread4.trace", timeout=50000000 * site(TestDurationMultiplier))),
       // Module(new TLRAMCoalescerLoggerTest(filename="psort.core1.thread4.trace", timeout=timeout)),
-      // Module(new TLRAMCoalescerLoggerTest(filename="nvbit.vecadd.n100000.filter_sm0.trace", timeout=timeout)(new WithNLanes(32))),
+      // Module(new TLRAMCoalescerLoggerTest(filename="nvbit.vecadd.n100000.filter_sm0.trace", timeout=timeout)(new WithSimtLanes(32))),
     ) }
 })
 
@@ -115,7 +115,7 @@ class WithCoalescingUnitSynthesisDummy(nLanes: Int) extends Config((site, _, _) 
     implicit val p = q
     val timeout = 50000 * site(TestDurationMultiplier)
     Seq(
-      Module(new DummyCoalescerTest(timeout=timeout)(new WithNLanes(nLanes))),
+      Module(new DummyCoalescerTest(timeout=timeout)(new WithSimtLanes(nLanes=4))),
     ) }
 })
 
@@ -197,7 +197,7 @@ class AMBAUnitTestConfig extends Config(new WithAMBAUnitTests ++ new WithTestDur
 class TLSimpleUnitTestConfig extends Config(new WithTLSimpleUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class TLWidthUnitTestConfig extends Config(new WithTLWidthUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class TLXbarUnitTestConfig extends Config(new WithTLXbarUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
-class CoalescingUnitTestConfig extends Config(new WithCoalescingUnitTests ++ new WithTestDuration(10) ++ new WithNLanes(4) ++ new BaseSubsystemConfig)
+class CoalescingUnitTestConfig extends Config(new WithCoalescingUnitTests ++ new WithTestDuration(10) ++ new WithSimtLanes(nLanes=4) ++ new BaseSubsystemConfig)
 class ECCUnitTestConfig extends Config(new WithECCTests)
 class ScatterGatherTestConfig extends Config(new WithScatterGatherTests)
 class PLRUUnitTestConfig extends Config(new WithPLRUTests)

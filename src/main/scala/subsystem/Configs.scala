@@ -253,9 +253,12 @@ class With1TinyCore extends Config((site, here, up) => {
   }
 })
 
-class WithNLanes(n: Int) extends Config((site, _, up) => {
+class WithSimtLanes(nLanes: Int, nSrcIds: Int = 8) extends Config((site, _, up) => {
   case SIMTCoreKey => {
-    Some(up(SIMTCoreKey, site).getOrElse(SIMTCoreParams()).copy(nLanes = n))
+    Some(up(SIMTCoreKey, site).getOrElse(SIMTCoreParams()).copy(
+      nLanes = nLanes,
+      nSrcIds = nSrcIds
+      ))
   }
 })
 
@@ -276,11 +279,11 @@ class WithPriorityCoalXbar extends Config((site, _, up) => {
     }
 })
 
-class WithCoalescer extends Config((site, _, up) => {
+class WithCoalescer(nNewSrcIds: Int = 8) extends Config((site, _, up) => {
   case CoalescerKey => {
-    val nLanes = up(SIMTCoreKey, site) match {
-      case Some(param) => param.nLanes
-      case None => 1
+    val (nLanes, numOldSrcIds) = up(SIMTCoreKey, site) match {
+      case Some(param) => (param.nLanes, param.nSrcIds)
+      case None => (1,1)
     }
   // FIXME addressWidth is a hack; would it be better to set it at runtime?
   
@@ -288,7 +291,9 @@ class WithCoalescer extends Config((site, _, up) => {
     val subWidthInBytes = site(SystemBusKey).beatBits/8
 
     Some(defaultConfig.copy(
-      numLanes = nLanes, 
+      numLanes     = nLanes, 
+      numOldSrcIds = numOldSrcIds,
+      numNewSrcIds = nNewSrcIds,
       addressWidth = 32, //I couldn't find where this 32 is coming from
       dataBusWidth = log2Ceil(subWidthInBytes), 
       coalLogSizes = Seq(log2Ceil(subWidthInBytes)) 
