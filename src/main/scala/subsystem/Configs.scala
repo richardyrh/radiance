@@ -7,7 +7,6 @@ import chisel3.util._
 import org.chipsalliance.cde.config._
 import freechips.rocketchip.devices.debug._
 import freechips.rocketchip.devices.tilelink._
-import freechips.rocketchip.tilelink._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket._
 import freechips.rocketchip.tile._
@@ -148,43 +147,6 @@ class WithNMedCores(
   }
 })
 
-class WithNCustomSmallCores(
-  n: Int,
-  overrideIdOffset: Option[Int] = None,
-  crossing: RocketCrossingParams = RocketCrossingParams()
-) extends Config((site, here, up) => {
-  case TilesLocated(InSubsystem) => {
-    val prev = up(TilesLocated(InSubsystem), site)
-    val idOffset = overrideIdOffset.getOrElse(prev.size)
-    val med = RocketTileParams(
-      core = RocketCoreParams(fpu = None),
-      btb = None,
-      dcache = Some(DCacheParams(
-        rowBits = site(SystemBusKey).beatBits,
-        nSets = 2,
-        nWays = 1,
-        nTLBSets = 1,
-        nTLBWays = 2,
-        nTLBBasePageSectors = 1,
-        nTLBSuperpages = 1,
-        nMSHRs = 0,
-        blockBytes = site(CacheBlockBytes))),
-      icache = Some(ICacheParams(
-        rowBits = site(SystemBusKey).beatBits,
-        nSets = 2,
-        nWays = 1,
-        nTLBSets = 1,
-        nTLBWays = 2,
-        nTLBBasePageSectors = 1,
-        nTLBSuperpages = 1,
-        blockBytes = site(CacheBlockBytes))))
-    List.tabulate(n)(i => RocketTileAttachParams(
-      med.copy(hartId = i + idOffset),
-      crossing
-    )) ++ prev
-  }
-})
-
 class WithNSmallCores(
   n: Int,
   overrideIdOffset: Option[Int] = None,
@@ -253,54 +215,6 @@ class With1TinyCore extends Config((site, here, up) => {
   }
 })
 
-class WithSimtLanes(nLanes: Int, nSrcIds: Int = 8) extends Config((site, _, up) => {
-  case SIMTCoreKey => {
-    Some(up(SIMTCoreKey, site).getOrElse(SIMTCoreParams()).copy(
-      nLanes = nLanes,
-      nSrcIds = nSrcIds
-      ))
-  }
-})
-
-class WithMemtraceCore(tracefilename: String, traceHasSource: Boolean = false)
-extends Config((site, _, _) => {
-  case MemtraceCoreKey => {
-    require(
-      site(SIMTCoreKey).isDefined,
-      "Memtrace core requires a SIMT configuration. Use WithNLanes to enable SIMT."
-    )
-    Some(MemtraceCoreParams(tracefilename, traceHasSource))
-  }
-})
-
-class WithPriorityCoalXbar extends Config((site, _, up) => {
-  case CoalXbarKey => {
-    Some(up(CoalXbarKey, site).getOrElse(CoalXbarParam))
-    }
-})
-
-class WithCoalescer(nNewSrcIds: Int = 8) extends Config((site, _, up) => {
-  case CoalescerKey => {
-    val (nLanes, numOldSrcIds) = up(SIMTCoreKey, site) match {
-      case Some(param) => (param.nLanes, param.nSrcIds)
-      case None => (1,1)
-    }
-  
-    // Configure databus width and maximum coalescing size
-    val subWidthInBytes = site(SystemBusKey).beatBits/8
-
-    Some(defaultConfig.copy(
-      numLanes     = nLanes, 
-      numOldSrcIds = numOldSrcIds,
-      numNewSrcIds = nNewSrcIds,
-      addressWidth = 32, // FIXME hardcoded as 32-bit system
-      dataBusWidth = log2Ceil(subWidthInBytes), 
-      coalLogSizes = Seq(log2Ceil(subWidthInBytes)) 
-      )
-    )
-  }
-})
-
 class WithNBanks(n: Int) extends Config((site, here, up) => {
   case BankedL2Key => up(BankedL2Key, site).copy(nBanks = n)
 })
@@ -339,6 +253,16 @@ class WithL1DCacheWays(ways: Int) extends Config((site, here, up) => {
   case TilesLocated(InSubsystem) => up(TilesLocated(InSubsystem), site) map {
     case tp: RocketTileAttachParams => tp.copy(tileParams = tp.tileParams.copy(
       dcache = tp.tileParams.dcache.map(_.copy(nWays = ways))))
+    case t => t
+  }
+})
+
+
+class WithRocketCacheRowBits(n: Int) extends Config((site, here, up) => {
+  case TilesLocated(InSubsystem) => up(TilesLocated(InSubsystem), site) map {
+    case tp: RocketTileAttachParams => tp.copy(tileParams = tp.tileParams.copy(
+      dcache = tp.tileParams.dcache.map(_.copy(rowBits = n)),
+      icache = tp.tileParams.icache.map(_.copy(rowBits = n))))
     case t => t
   }
 })
@@ -516,6 +440,14 @@ class WithCryptoSM extends Config((site, here, up) => {
   }
 })
 
+class WithRocketDebugROB(enable: Boolean = true) extends Config((site, here, up) => {
+  case TilesLocated(InSubsystem) => up(TilesLocated(InSubsystem), site) map {
+    case tp: RocketTileAttachParams => tp.copy(tileParams = tp.tileParams.copy(
+      core = tp.tileParams.core.copy(debugROB = enable)
+    ))
+  }
+})
+
 class WithRocketCease(enable: Boolean = true) extends Config((site, here, up) => {
   case TilesLocated(InSubsystem) => up(TilesLocated(InSubsystem), site) map {
     case tp: RocketTileAttachParams => tp.copy(tileParams = tp.tileParams.copy(
@@ -524,11 +456,11 @@ class WithRocketCease(enable: Boolean = true) extends Config((site, here, up) =>
   }
 })
 
-class WithRocketDebugROB(enable: Boolean = true) extends Config((site, here, up) => {
+class WithNoSimulationTimeout extends Config((site, here, up) => {
   case TilesLocated(InSubsystem) => up(TilesLocated(InSubsystem), site) map {
     case tp: RocketTileAttachParams => tp.copy(tileParams = tp.tileParams.copy(
-      core = tp.tileParams.core.copy(debugROB = enable)
-    ))
+      core = tp.tileParams.core.copy(haveSimTimeout = false)))
+    case t => t
   }
 })
 

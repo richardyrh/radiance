@@ -4,7 +4,6 @@ package freechips.rocketchip.devices.tilelink
 
 import chisel3._
 import chisel3.util._
-import freechips.rocketchip.util.CompileOptions.NotStrictInferReset
 import org.chipsalliance.cde.config.{Field, Parameters}
 import freechips.rocketchip.subsystem._
 import freechips.rocketchip.diplomacy._
@@ -14,7 +13,7 @@ import freechips.rocketchip.interrupts._
 import freechips.rocketchip.util._
 import freechips.rocketchip.util.property
 import freechips.rocketchip.prci.{ClockSinkDomain}
-import chisel3.internal.sourceinfo.SourceInfo
+import chisel3.experimental.SourceInfo
 
 import scala.math.min
 
