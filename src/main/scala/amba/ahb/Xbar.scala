@@ -7,7 +7,6 @@ import chisel3.util._
 import org.chipsalliance.cde.config.Parameters
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.util._
-import freechips.rocketchip.util.EnhancedChisel3Assign
 
 class AHBFanout()(implicit p: Parameters) extends LazyModule {
   val node = new AHBFanoutNode(

@@ -7,7 +7,6 @@ import chisel3.util._
 import chisel3.util.random.LFSR
 import org.chipsalliance.cde.config.Parameters
 import freechips.rocketchip.util._
-import freechips.rocketchip.util.EnhancedChisel3Assign
 
 object TLArbiter
 {

@@ -4,7 +4,6 @@ package freechips.rocketchip.amba.axi4
 
 import org.chipsalliance.cde.config._
 import freechips.rocketchip.diplomacy._
-import freechips.rocketchip.util.EnhancedChisel3Assign
 
 class AXI4Filter(
   Sfilter: AXI4SlaveParameters  => Option[AXI4SlaveParameters]   = AXI4Filter.Sidentity,

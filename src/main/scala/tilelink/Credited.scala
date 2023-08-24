@@ -8,7 +8,6 @@ import org.chipsalliance.cde.config.Parameters
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.subsystem.CrossingWrapper
 import freechips.rocketchip.util._
-import freechips.rocketchip.util.EnhancedChisel3Assign
 
 class TLCreditedBuffer(delay: TLCreditedDelay)(implicit p: Parameters) extends LazyModule
 {
