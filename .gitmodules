@@ -7,3 +7,6 @@
 [submodule "cde"]
 	path = cde
 	url = https://github.com/chipsalliance/cde.git
+[submodule "src/main/resources/vsrc/vortex"]
+	path = src/main/resources/vsrc/vortex
+	url = https://github.com/richardyrh/vortex.git

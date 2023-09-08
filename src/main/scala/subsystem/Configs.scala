@@ -12,6 +12,7 @@ import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket._
 import freechips.rocketchip.tile._
 import freechips.rocketchip.util._
+import tile.VortexTileParams
 
 class BaseSubsystemConfig extends Config ((site, here, up) => {
   // Tile parameters
@@ -250,6 +251,40 @@ class With1TinyCore extends Config((site, here, up) => {
         crossingType = SynchronousCrossing(),
         master = TileMasterPortParams())
     ))
+  }
+})
+
+class WithRadianceCores extends Config((site, here, up) => {
+  case XLen => 32
+  case TilesLocated(InSubsystem) => {
+    val prev = up(TilesLocated(InSubsystem), site)
+    val idOffset = prev.size
+    val vortex = VortexTileParams(
+      core = RocketCoreParams(fpu = None),
+      btb = None,
+      dcache = Some(DCacheParams(
+        rowBits = site(SystemBusKey).beatBits,
+        nSets = 64,
+        nWays = 1,
+        nTLBSets = 1,
+        nTLBWays = 1,
+        nTLBBasePageSectors = 1,
+        nTLBSuperpages = 1,
+      nMSHRs = 0,
+        blockBytes = site(CacheBlockBytes))),
+      icache = Some(ICacheParams(
+        rowBits = site(SystemBusKey).beatBits,
+        nSets = 64,
+        nWays = 1,
+        nTLBSets = 1,
+        nTLBWays = 1,
+        nTLBBasePageSectors = 1,
+        nTLBSuperpages = 1,
+        blockBytes = site(CacheBlockBytes))))
+    List.tabulate(1)(i => VortexTileAttachParams(
+      vortex.copy(hartId = i + idOffset),
+      RocketCrossingParams()
+    )) ++ prev
   }
 })
 
