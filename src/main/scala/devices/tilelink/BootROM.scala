@@ -5,10 +5,10 @@ package freechips.rocketchip.devices.tilelink
 import chisel3._
 import chisel3.util.log2Ceil
 import org.chipsalliance.cde.config.{Field, Parameters}
-import freechips.rocketchip.subsystem.{BaseSubsystem, HierarchicalLocation, HasTiles, TLBusWrapperLocation}
+import freechips.rocketchip.subsystem.{BaseSubsystem, HasTiles, HierarchicalLocation, InSubsystem, TLBusWrapperLocation}
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.tilelink._
-import freechips.rocketchip.prci.{ClockSinkDomain}
+import freechips.rocketchip.prci.ClockSinkDomain
 
 import java.nio.ByteBuffer
 import java.nio.file.{Files, Paths}
@@ -61,18 +61,23 @@ class TLROM(val base: BigInt, val size: Int, contentsDelayed: => Seq[Byte], exec
 
 case class BootROMLocated(loc: HierarchicalLocation) extends Field[Option[BootROMParams]](None)
 
+case class RadianceArgsROMParams(
+                                  address: BigInt = 0x7FFF0000L,
+                                  size: Int = 0x10000,
+                                  contentFileName: String)
+case class RadianceArgsROMLocated() extends Field[Option[RadianceArgsROMParams]](None)
+
 object BootROM {
   /** BootROM.attach not only instantiates a TLROM and attaches it to the tilelink interconnect
     *    at a configurable location, but also drives the tiles' reset vectors to point
     *    at its 'hang' address parameter value.
     */
-  def attach(params: BootROMParams, subsystem: BaseSubsystem with HasTiles, where: TLBusWrapperLocation)
-            (implicit p: Parameters): TLROM = {
+  def attach(params: BootROMParams, subsystem: BaseSubsystem with HasTiles, where: TLBusWrapperLocation,
+             driveResetVector: Boolean = true) (implicit p: Parameters): TLROM = {
     val tlbus = subsystem.locateTLBusWrapper(where)
     val bootROMDomainWrapper = LazyModule(new ClockSinkDomain(take = None))
     bootROMDomainWrapper.clockNode := tlbus.fixedClockNode
 
-    val bootROMResetVectorSourceNode = BundleBridgeSource[UInt]()
     lazy val contents = {
       val romdata = Files.readAllBytes(Paths.get(params.contentFileName))
       val rom = ByteBuffer.wrap(romdata)
@@ -84,14 +89,24 @@ object BootROM {
     }
 
     bootrom.node := tlbus.coupleTo("bootrom"){ TLFragmenter(tlbus) := _ }
-    // Drive the `subsystem` reset vector to the `hang` address of this Boot ROM.
-    subsystem.tileResetVectorNexusNode := bootROMResetVectorSourceNode
-    InModuleBody {
-      val reset_vector_source = bootROMResetVectorSourceNode.bundle
-      require(reset_vector_source.getWidth >= params.hang.bitLength,
-        s"BootROM defined with a reset vector (${params.hang})too large for physical address space (${reset_vector_source.getWidth})")
-      bootROMResetVectorSourceNode.bundle := params.hang.U
+
+    if (driveResetVector) {
+      val bootROMResetVectorSourceNode = BundleBridgeSource[UInt]()
+      // Drive the `subsystem` reset vector to the `hang` address of this Boot ROM.
+      subsystem.tileResetVectorNexusNode := bootROMResetVectorSourceNode
+      InModuleBody {
+        val reset_vector_source = bootROMResetVectorSourceNode.bundle
+        require(reset_vector_source.getWidth >= params.hang.bitLength,
+          s"BootROM defined with a reset vector (${params.hang})too large for physical address space (${reset_vector_source.getWidth})")
+        bootROMResetVectorSourceNode.bundle := params.hang.U
+      }
     }
     bootrom
+  }
+
+  def attachArgs(params: RadianceArgsROMParams, subsystem: BaseSubsystem with HasTiles, where: TLBusWrapperLocation)
+                (implicit p: Parameters): Unit = {
+    attach(BootROMParams(address = params.address, size = params.size, contentFileName = params.contentFileName),
+      subsystem, where, driveResetVector = false)
   }
 }

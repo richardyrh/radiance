@@ -40,6 +40,7 @@ class BaseSubsystemConfig extends Config ((site, here, up) => {
     blockBytes = site(CacheBlockBytes))
   // Additional device Parameters
   case BootROMLocated(InSubsystem) => Some(BootROMParams(contentFileName = "./bootrom/bootrom.img"))
+  case RadianceArgsROMLocated() => Some(RadianceArgsROMParams(contentFileName = "../../sims/vcs/args.bin"))
   case SubsystemExternalResetVectorKey => false
   case DebugModuleKey => Some(DefaultDebugModuleParams(site(XLen)))
   case CLINTKey => Some(CLINTParams())
