@@ -4,9 +4,10 @@ package freechips.rocketchip.subsystem
 
 import org.chipsalliance.cde.config.Parameters
 import freechips.rocketchip.diplomacy._
-import freechips.rocketchip.prci.{ResetCrossingType, NoResetCrossing}
+import freechips.rocketchip.prci.{NoResetCrossing, ResetCrossingType}
 import freechips.rocketchip.tile._
-import freechips.rocketchip.devices.debug.{HasPeripheryDebug}
+import freechips.rocketchip.devices.debug.HasPeripheryDebug
+import tile._
 
 case class RocketCrossingParams(
   crossingType: ClockCrossingType = SynchronousCrossing(),
@@ -21,6 +22,11 @@ case class RocketTileAttachParams(
   tileParams: RocketTileParams,
   crossingParams: RocketCrossingParams
 ) extends CanAttachTile { type TileType = RocketTile }
+
+case class VortexTileAttachParams(
+  tileParams: VortexTileParams,
+  crossingParams: RocketCrossingParams
+) extends CanAttachTile { type TileType = VortexTile }
 
 trait HasRocketTiles extends HasTiles { this: BaseSubsystem =>
   val rocketTiles = tiles.collect { case r: RocketTile => r }
