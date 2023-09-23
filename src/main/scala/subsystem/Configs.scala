@@ -255,7 +255,7 @@ class With1TinyCore extends Config((site, here, up) => {
   }
 })
 
-class WithRadianceCores extends Config((site, here, up) => {
+class WithRadianceCores(use_vx_cache: Boolean) extends Config((site, here, up) => {
   case XLen => 32
   case TilesLocated(InSubsystem) => {
     val prev = up(TilesLocated(InSubsystem), site)
@@ -263,7 +263,7 @@ class WithRadianceCores extends Config((site, here, up) => {
     val vortex = VortexTileParams(
       core = RocketCoreParams(fpu = None),
       btb = None,
-      dcache = Some(DCacheParams(
+      dcache = if (use_vx_cache) None else Some(DCacheParams(
         rowBits = site(SystemBusKey).beatBits,
         nSets = 64,
         nWays = 1,
@@ -273,7 +273,7 @@ class WithRadianceCores extends Config((site, here, up) => {
         nTLBSuperpages = 1,
       nMSHRs = 0,
         blockBytes = site(CacheBlockBytes))),
-      icache = Some(ICacheParams(
+      icache = if (use_vx_cache) None else Some(ICacheParams(
         rowBits = site(SystemBusKey).beatBits,
         nSets = 64,
         nWays = 1,
