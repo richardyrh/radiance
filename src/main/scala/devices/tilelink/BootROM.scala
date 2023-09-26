@@ -61,11 +61,10 @@ class TLROM(val base: BigInt, val size: Int, contentsDelayed: => Seq[Byte], exec
 
 case class BootROMLocated(loc: HierarchicalLocation) extends Field[Option[BootROMParams]](None)
 
-case class RadianceArgsROMParams(
-                                  address: BigInt = 0x7FFF0000L,
-                                  size: Int = 0x10000,
-                                  contentFileName: String)
-case class RadianceArgsROMLocated() extends Field[Option[RadianceArgsROMParams]](None)
+case class RadianceROMParams(address: BigInt,
+                                 size: Int = 0x10000,
+                                 contentFileName: String)
+case class RadianceROMsLocated() extends Field[Seq[RadianceROMParams]]
 
 object BootROM {
   /** BootROM.attach not only instantiates a TLROM and attaches it to the tilelink interconnect
@@ -104,7 +103,7 @@ object BootROM {
     bootrom
   }
 
-  def attachArgs(params: RadianceArgsROMParams, subsystem: BaseSubsystem with HasTiles, where: TLBusWrapperLocation)
+  def attachROM(params: RadianceROMParams, subsystem: BaseSubsystem with HasTiles, where: TLBusWrapperLocation)
                 (implicit p: Parameters): Unit = {
     attach(BootROMParams(address = params.address, size = params.size, contentFileName = params.contentFileName),
       subsystem, where, driveResetVector = false)
