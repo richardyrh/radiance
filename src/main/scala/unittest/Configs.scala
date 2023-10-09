@@ -12,6 +12,7 @@ import freechips.rocketchip.devices.tilelink._
 import freechips.rocketchip.tilelink._
 import freechips.rocketchip.util._
 import freechips.rocketchip.subsystem.WithSimtLanes
+import rocket.VortexFatBankTest
 
 case object TestDurationMultiplier extends Field[Int]
 
@@ -111,6 +112,15 @@ class WithCoalescingUnitTests extends Config((site, _, _) => {
     ) }
 })
 
+class WithVortexFatBankUnitTests extends Config((site, _, _) => {
+  case UnitTests => (q: Parameters) => {
+    implicit val p = q
+    val timeout = 50000 * site(TestDurationMultiplier)
+    Seq(
+      Module(new VortexFatBankTest(filename="oclprintf.core1.thread4.trace", timeout=timeout)),
+    )}
+})
+
 class WithCoalescingUnitSynthesisDummy(nLanes: Int) extends Config((site, _, _) => {
   case UnitTests => (q: Parameters) => {
     implicit val p = q
@@ -199,6 +209,7 @@ class TLSimpleUnitTestConfig extends Config(new WithTLSimpleUnitTests ++ new Wit
 class TLWidthUnitTestConfig extends Config(new WithTLWidthUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class TLXbarUnitTestConfig extends Config(new WithTLXbarUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class CoalescingUnitTestConfig extends Config(new WithCoalescingUnitTests ++ new WithTestDuration(10) ++ new WithSimtLanes(nLanes=4) ++ new BaseSubsystemConfig)
+class VortexFatBankUnitTestConfig extends Config(new WithVortexFatBankUnitTests ++ new WithTestDuration(10) ++ new WithSimtLanes(nLanes=4) ++ new BaseSubsystemConfig)
 class ECCUnitTestConfig extends Config(new WithECCTests)
 class ScatterGatherTestConfig extends Config(new WithScatterGatherTests)
 class PLRUUnitTestConfig extends Config(new WithPLRUTests)
@@ -209,3 +220,4 @@ class CoalescingSynthesisDummyLane4Config extends Config(new WithCoalescingUnitS
 class CoalescingSynthesisDummyLane8Config extends Config(new WithCoalescingUnitSynthesisDummy(8) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class CoalescingSynthesisDummyLane16Config extends Config(new WithCoalescingUnitSynthesisDummy(16) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class CoalescingSynthesisDummyLane32Config extends Config(new WithCoalescingUnitSynthesisDummy(32) ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
+
