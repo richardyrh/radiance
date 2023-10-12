@@ -255,7 +255,10 @@ class With1TinyCore extends Config((site, here, up) => {
   }
 })
 
-class WithRadianceCores(use_vx_cache: Boolean) extends Config((site, here, up) => {
+class WithRadianceCores(
+  n: Int,
+  useVxCache: Boolean
+) extends Config((site, _, up) => {
   case XLen => 32
   case TilesLocated(InSubsystem) => {
     val prev = up(TilesLocated(InSubsystem), site)
@@ -263,7 +266,7 @@ class WithRadianceCores(use_vx_cache: Boolean) extends Config((site, here, up) =
     val vortex = VortexTileParams(
       core = RocketCoreParams(fpu = None),
       btb = None,
-      useVxCache = use_vx_cache,
+      useVxCache = useVxCache,
       dcache = Some(DCacheParams(
         rowBits = site(SystemBusKey).beatBits,
         nSets = 64,
@@ -283,7 +286,7 @@ class WithRadianceCores(use_vx_cache: Boolean) extends Config((site, here, up) =
         nTLBBasePageSectors = 1,
         nTLBSuperpages = 1,
         blockBytes = site(CacheBlockBytes))))
-    List.tabulate(1)(i => VortexTileAttachParams(
+    List.tabulate(n)(i => VortexTileAttachParams(
       vortex.copy(hartId = i + idOffset),
       RocketCrossingParams()
     )) ++ prev
