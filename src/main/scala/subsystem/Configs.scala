@@ -255,7 +255,10 @@ class With1TinyCore extends Config((site, here, up) => {
   }
 })
 
-class WithRadianceCores extends Config((site, here, up) => {
+class WithRadianceCores(
+  n: Int,
+  useVxCache: Boolean
+) extends Config((site, _, up) => {
   case XLen => 32
   case TilesLocated(InSubsystem) => {
     val prev = up(TilesLocated(InSubsystem), site)
@@ -263,6 +266,7 @@ class WithRadianceCores extends Config((site, here, up) => {
     val vortex = VortexTileParams(
       core = RocketCoreParams(fpu = None),
       btb = None,
+      useVxCache = useVxCache,
       dcache = Some(DCacheParams(
         rowBits = site(SystemBusKey).beatBits,
         nSets = 64,
@@ -282,7 +286,7 @@ class WithRadianceCores extends Config((site, here, up) => {
         nTLBBasePageSectors = 1,
         nTLBSuperpages = 1,
         blockBytes = site(CacheBlockBytes))))
-    List.tabulate(1)(i => VortexTileAttachParams(
+    List.tabulate(n)(i => VortexTileAttachParams(
       vortex.copy(hartId = i + idOffset),
       RocketCrossingParams()
     )) ++ prev
@@ -700,6 +704,17 @@ class WithDefaultSlavePort extends Config((site, here, up) => {
 
 class WithNoSlavePort extends Config((site, here, up) => {
   case ExtIn => None
+})
+
+class WithScratchpadsBaseAddress(address: BigInt) extends Config((site, here, up) => {
+  case TilesLocated(InSubsystem) => up(TilesLocated(InSubsystem), site) map {
+    case tp: RocketTileAttachParams => tp.copy(tileParams = tp.tileParams.copy(
+      dcache = tp.tileParams.dcache.map(
+        _.copy(scratch = Some(address))
+      )
+    ))
+    case t => t
+  }
 })
 
 class WithScratchpadsOnly extends Config((site, here, up) => {

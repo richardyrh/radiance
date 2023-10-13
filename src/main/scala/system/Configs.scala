@@ -22,7 +22,7 @@ class BaseConfig extends Config(
 
 class DefaultConfig extends Config(new WithNBigCores(1) ++ new WithCoherentBusTopology ++ new BaseConfig)
 class RadianceConfig extends Config(
-  new WithRadianceCores() ++ new WithCoherentBusTopology ++ new BaseConfig
+  new WithRadianceCores(1, useVxCache = true) ++ new WithCoherentBusTopology ++ new BaseConfig
 )
 
 class DefaultBufferlessConfig extends Config(new WithBufferlessBroadcastHub ++ new DefaultConfig)
