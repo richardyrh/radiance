@@ -14,6 +14,7 @@ import freechips.rocketchip.tile._
 import freechips.rocketchip.util._
 import tile.VortexTileParams
 
+
 class BaseSubsystemConfig extends Config ((site, here, up) => {
   // Tile parameters
   case PgLevels => if (site(XLen) == 64) 3 /* Sv39 */ else 2 /* Sv32 */
@@ -316,6 +317,16 @@ class WithPriorityCoalXbar extends Config((site, _, up) => {
     }
 })
 
+class WithVortexFatBank(wSize: Int = 16) extends Config ((site, _, up) => {
+  case VortexFatBankKey => {
+
+    Some(defaultFatBankConfig.copy(
+      wordSize = wSize
+    ))
+    
+  }
+})
+
 class WithCoalescer(nNewSrcIds: Int = 8) extends Config((site, _, up) => {
   case CoalescerKey => {
     val (nLanes, numOldSrcIds) = up(SIMTCoreKey, site) match {
@@ -323,20 +334,29 @@ class WithCoalescer(nNewSrcIds: Int = 8) extends Config((site, _, up) => {
       case None => (1,1)
     }
 
-    // Configure databus width and maximum coalescing size
-    val subWidthInBytes = site(SystemBusKey).beatBits/8
+    //If we are using Vortex L1, the maximum coalescing size is wordSize of L1
+    //If we are not using L1, it's the data bus width
+    val maxCoalSizeInBytes = up(VortexFatBankKey, site) match {
+      case Some(param) =>
+        println(s"============ Using Vortex FatBank, Maximum Coal Size will be override into words of L1: ${param.wordSize}B")
+        (param.wordSize) 
+      case None => site(SystemBusKey).beatBits/8
+    }
+      
 
     Some(defaultConfig.copy(
       numLanes     = nLanes,
       numOldSrcIds = numOldSrcIds,
       numNewSrcIds = nNewSrcIds,
-      addressWidth = 32, // FIXME hardcoded as 32-bit system
-      dataBusWidth = log2Ceil(subWidthInBytes),
-      coalLogSizes = Seq(log2Ceil(subWidthInBytes))
+      addressWidth = 32, // FIXME hardcoded as 32 bits, allowing range (0x80000000->0x90000000)
+      dataBusWidth = log2Ceil(maxCoalSizeInBytes),
+      coalLogSizes = Seq(log2Ceil(maxCoalSizeInBytes))
       )
     )
   }
 })
+
+
 
 class WithNBanks(n: Int) extends Config((site, here, up) => {
   case BankedL2Key => up(BankedL2Key, site).copy(nBanks = n)

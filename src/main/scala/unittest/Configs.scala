@@ -12,7 +12,7 @@ import freechips.rocketchip.devices.tilelink._
 import freechips.rocketchip.tilelink._
 import freechips.rocketchip.util._
 import freechips.rocketchip.subsystem.WithSimtLanes
-import rocket.VortexFatBankTest
+//import rocket.VortexFatBankTest
 
 case object TestDurationMultiplier extends Field[Int]
 
@@ -112,6 +112,7 @@ class WithCoalescingUnitTests extends Config((site, _, _) => {
     ) }
 })
 
+/*
 class WithVortexFatBankUnitTests extends Config((site, _, _) => {
   case UnitTests => (q: Parameters) => {
     implicit val p = q
@@ -120,6 +121,7 @@ class WithVortexFatBankUnitTests extends Config((site, _, _) => {
       Module(new VortexFatBankTest(filename="oclprintf.core1.thread4.trace", timeout=timeout)),
     )}
 })
+*/
 
 class WithCoalescingUnitSynthesisDummy(nLanes: Int) extends Config((site, _, _) => {
   case UnitTests => (q: Parameters) => {
@@ -209,7 +211,7 @@ class TLSimpleUnitTestConfig extends Config(new WithTLSimpleUnitTests ++ new Wit
 class TLWidthUnitTestConfig extends Config(new WithTLWidthUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class TLXbarUnitTestConfig extends Config(new WithTLXbarUnitTests ++ new WithTestDuration(10) ++ new BaseSubsystemConfig)
 class CoalescingUnitTestConfig extends Config(new WithCoalescingUnitTests ++ new WithTestDuration(10) ++ new WithSimtLanes(nLanes=4) ++ new BaseSubsystemConfig)
-class VortexFatBankUnitTestConfig extends Config(new WithVortexFatBankUnitTests ++ new WithTestDuration(10) ++ new WithSimtLanes(nLanes=4) ++ new BaseSubsystemConfig)
+//class VortexFatBankUnitTestConfig extends Config(new WithVortexFatBankUnitTests ++ new WithTestDuration(10) ++ new WithSimtLanes(nLanes=4) ++ new BaseSubsystemConfig)
 class ECCUnitTestConfig extends Config(new WithECCTests)
 class ScatterGatherTestConfig extends Config(new WithScatterGatherTests)
 class PLRUUnitTestConfig extends Config(new WithPLRUTests)

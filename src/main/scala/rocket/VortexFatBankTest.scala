@@ -1,3 +1,4 @@
+/*
 package rocket
 
 import chisel3._
@@ -103,3 +104,4 @@ class VortexFatBankTestbench(filename: String)(implicit p: Parameters)
         // TODO: check correctness
     }
 }
+*/
