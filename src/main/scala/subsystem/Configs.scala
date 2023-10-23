@@ -329,7 +329,8 @@ class WithCoalescer(nNewSrcIds: Int = 8) extends Config((site, _, up) => {
     // Configure databus width and maximum coalescing size
     val subWidthInBytes = site(SystemBusKey).beatBits/8
 
-    Some(defaultConfig.copy(
+    // Note: this config chooses a single-sized coalescing logic by default.
+    Some(DefaultCoalescerConfig.copy(
       numLanes     = nLanes,
       numOldSrcIds = numOldSrcIds,
       numNewSrcIds = nNewSrcIds,
