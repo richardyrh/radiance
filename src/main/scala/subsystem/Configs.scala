@@ -327,7 +327,9 @@ class WithCoalescer(nNewSrcIds: Int = 8) extends Config((site, _, up) => {
     }
 
     // Configure databus width and maximum coalescing size
-    val subWidthInBytes = site(SystemBusKey).beatBits/8
+    val subWidthInBytes = site(SystemBusKey).beatBytes
+    // FIXME: coalescer fails to instantiate with 4-byte bus
+    assert(subWidthInBytes > 2, "FIXME: coalescer currently doesn't instantiate with 4-byte sbus")
 
     // Note: this config chooses a single-sized coalescing logic by default.
     Some(DefaultCoalescerConfig.copy(
