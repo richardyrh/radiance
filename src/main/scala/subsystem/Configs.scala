@@ -12,7 +12,7 @@ import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket._
 import freechips.rocketchip.tile._
 import freechips.rocketchip.util._
-import tile.VortexTileParams
+import freechips.rocketchip.tile.VortexTileParams
 
 class BaseSubsystemConfig extends Config ((site, here, up) => {
   // Tile parameters
@@ -264,7 +264,7 @@ class WithRadianceCores(
     val prev = up(TilesLocated(InSubsystem), site)
     val idOffset = prev.size
     val vortex = VortexTileParams(
-      core = RocketCoreParams(fpu = None),
+      core = VortexCoreParams(fpu = None),
       btb = None,
       useVxCache = useVxCache,
       dcache = Some(DCacheParams(

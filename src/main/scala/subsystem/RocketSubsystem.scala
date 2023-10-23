@@ -7,7 +7,6 @@ import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.prci.{NoResetCrossing, ResetCrossingType}
 import freechips.rocketchip.tile._
 import freechips.rocketchip.devices.debug.HasPeripheryDebug
-import tile._
 
 case class RocketCrossingParams(
   crossingType: ClockCrossingType = SynchronousCrossing(),
