@@ -688,6 +688,9 @@ class TLMonitor(args: TLMonitorArgs, monitorDir: MonitorDirection = MonitorDirec
       } .otherwise {
         assume((bundle.d.bits.opcode === responseMap(a_opcode_lookup)) ||
                (bundle.d.bits.opcode === responseMapSecondOption(a_opcode_lookup)), "'D' channel contains improper opcode response" + extra)
+        when(bundle.d.bits.size =/= a_size_lookup){
+          printf("Mismatch detected! D size: %x, Expected size: %x\n", bundle.d.bits.size, a_size_lookup)
+        }
         assume((bundle.d.bits.size === a_size_lookup), "'D' channel contains improper response size" + extra)
       }
     }
