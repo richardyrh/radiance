@@ -319,11 +319,9 @@ class WithPriorityCoalXbar extends Config((site, _, up) => {
 
 class WithVortexFatBank(wSize: Int = 16) extends Config ((site, _, up) => {
   case VortexFatBankKey => {
-
-    Some(defaultFatBankConfig.copy(
+    Some(DefaultFatBankConfig.copy(
       wordSize = wSize
     ))
-    
   }
 })
 
