@@ -320,15 +320,19 @@ class WithPriorityCoalXbar extends Config((site, _, up) => {
     }
 })
 
-class WithVortexFatBank(wSize: Int = 16) extends Config ((site, _, up) => {
-  case VortexFatBankKey => {
 
-    Some(defaultFatBankConfig.copy(
-      wordSize = wSize
+class WithVortexFatBank(nBanks: Int = 4) extends Config ((site, _, up) => {
+  case L1SystemKey => {
+
+    //FIXME, more things here
+    Some(defaultL1SystemConfig.copy(
+      numBanks = nBanks
     ))
     
   }
 })
+
+
 
 class WithCoalescer(nNewSrcIds: Int = 8) extends Config((site, _, up) => {
   case CoalescerKey => {
@@ -344,7 +348,7 @@ class WithCoalescer(nNewSrcIds: Int = 8) extends Config((site, _, up) => {
 
     //If we are using Vortex L1, the maximum coalescing size is wordSize of L1
     //If we are not using L1, it's the data bus width
-    val maxCoalSizeInBytes = up(VortexFatBankKey, site) match {
+    val maxCoalSizeInBytes = up(L1SystemKey, site) match {
       case Some(param) =>
         println(s"============ Using Vortex FatBank, Maximum Coal Size will be override into words of L1: ${param.wordSize}B")
         (param.wordSize) 
