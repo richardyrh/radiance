@@ -294,6 +294,7 @@ class WithRadianceCores(
   }
 })
 
+// `nSrcIds`: number of source IDs for dmem requests on each SIMT lane
 class WithSimtLanes(nLanes: Int, nSrcIds: Int = 8) extends Config((site, _, up) => {
   case SIMTCoreKey => {
     Some(up(SIMTCoreKey, site).getOrElse(SIMTCoreParams()).copy(
