@@ -321,7 +321,7 @@ class WithPriorityCoalXbar extends Config((site, _, up) => {
   }
 })
 
-class WithVortexFatBank(nBanks: Int = 4) extends Config ((site, _, up) => {
+class WithVortexL1Banks(nBanks: Int = 4) extends Config ((site, _, up) => {
   case VortexL1Key => {
     Some(defaultVortexL1Config.copy(numBanks = nBanks))
   }
