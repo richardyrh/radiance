@@ -318,22 +318,14 @@ extends Config((site, _, _) => {
 class WithPriorityCoalXbar extends Config((site, _, up) => {
   case CoalXbarKey => {
     Some(up(CoalXbarKey, site).getOrElse(CoalXbarParam))
-    }
-})
-
-
-class WithVortexFatBank(nBanks: Int = 4) extends Config ((site, _, up) => {
-  case L1SystemKey => {
-
-    //FIXME, more things here
-    Some(defaultL1SystemConfig.copy(
-      numBanks = nBanks
-    ))
-    
   }
 })
 
-
+class WithVortexFatBank(nBanks: Int = 4) extends Config ((site, _, up) => {
+  case VortexL1Key => {
+    Some(defaultVortexL1Config.copy(numBanks = nBanks))
+  }
+})
 
 class WithCoalescer(nNewSrcIds: Int = 8) extends Config((site, _, up) => {
   case CoalescerKey => {
@@ -342,35 +334,31 @@ class WithCoalescer(nNewSrcIds: Int = 8) extends Config((site, _, up) => {
       case None => (1,1)
     }
 
-    // Configure databus width and maximum coalescing size
     val sbusWidthInBytes = site(SystemBusKey).beatBytes
     // FIXME: coalescer fails to instantiate with 4-byte bus
-    assert(sbusWidthInBytes > 2, "FIXME: coalescer currently doesn't instantiate with 4-byte sbus")
+    require(sbusWidthInBytes > 2,
+      "FIXME: coalescer currently doesn't instantiate with 4-byte sbus")
 
-    //If we are using Vortex L1, the maximum coalescing size is wordSize of L1
-    //If we are not using L1, it's the data bus width
-    val maxCoalSizeInBytes = up(L1SystemKey, site) match {
+    // If instantiating L1 cache, the maximum coalescing size should match the
+    // cache line size
+    val maxCoalSizeInBytes = up(VortexL1Key, site) match {
       case Some(param) =>
-        println(s"============ Using Vortex FatBank, Maximum Coal Size will be override into words of L1: ${param.wordSize}B")
         (param.wordSize) 
       case None => sbusWidthInBytes
     }
       
-
     // Note: this config chooses a single-sized coalescing logic by default.
     Some(DefaultCoalescerConfig.copy(
       numLanes     = nLanes,
       numOldSrcIds = numOldSrcIds,
       numNewSrcIds = nNewSrcIds,
-      addressWidth = 32, // FIXME hardcoded as 32 bits, allowing range (0x80000000->0x90000000)
+      addressWidth = 32, // FIXME hardcoded as 32-bit system
       dataBusWidth = log2Ceil(maxCoalSizeInBytes),
       coalLogSizes = Seq(log2Ceil(maxCoalSizeInBytes))
       )
     )
   }
 })
-
-
 
 class WithNBanks(n: Int) extends Config((site, here, up) => {
   case BankedL2Key => up(BankedL2Key, site).copy(nBanks = n)
