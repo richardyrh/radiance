@@ -260,7 +260,7 @@ class WithRadianceCores(
   n: Int,
   useVxCache: Boolean
 ) extends Config((site, _, up) => {
-  case XLen => 32
+  // case XLen => 32
   case TilesLocated(InSubsystem) => {
     val prev = up(TilesLocated(InSubsystem), site)
     val idOffset = prev.size
