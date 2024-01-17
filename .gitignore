@@ -1,8 +1,5 @@
 out/
 target/
-project/target
-docs/generated
-docs-target/
 *.fir
 *.v
 *.anno.json
@@ -12,7 +9,6 @@ docs-target/
 /lib/
 /test_lib/
 /testbuild/
-rocketchip.jar
 *#
 .#*
 .idea/
